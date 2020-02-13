@@ -25,7 +25,7 @@ SECRET_KEY = 'i1k+s+#g$k-=3fl*o6nj$=c7(u3f329=38%mi38j-mjluidtlf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -121,3 +121,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 MEDIA_URL='/media/'
+LOGIN_REDIRECT_URL='/mac'

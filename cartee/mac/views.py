@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse
+from django.contrib.auth import authenticate,login
+from django.contrib.auth.forms import UserCreationForm
 from . import models
 from .models import Product,Contact,Orders,OrderUpdate
 from math import ceil
@@ -87,3 +89,25 @@ def checkout(request):
 def products(request):
         return HttpResponse(models.Product.all)
 
+def register(request):
+    if request.method=='POST':
+        form=UserCreationForm(request.POST)
+
+        if form.is_valid():
+            user=form.save(commit=False)
+            password=form.cleaned_data.get('password')
+            user.set_password(password)
+            form.save()
+            username=form.cleaned_data['username']
+            password=form.cleaned_data['password1']
+            user=authenticate(username=username,password=password)
+            login(request,user)
+            if next:
+                return redirect(next)
+            return redirect('/mac')
+    else:
+        form=UserCreationForm()
+    context={'form':form}
+    return render(request,'registration/register.html',context)
+
+ 

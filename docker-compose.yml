@@ -1,0 +1,14 @@
+version: "3"
+services: 
+    cartee:
+        build:
+            context: .
+        ports: 
+            - "8000:80" 
+        volumes: 
+            - ./cartee /cartee
+        command: >
+            sh -c "python manage.py runserver"
+
+
+ 
