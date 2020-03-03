@@ -1,18 +1,21 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from django.contrib.auth import authenticate,login
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.forms import UserCreationForm,User
+from django.contrib.auth.decorators import login_required
 from . import models
 from .models import Product,Contact,Orders,OrderUpdate
+from . forms import CreateUserForm
 from math import ceil
-
+import jwt,datetime
 # import the logging library
 import logging
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 # Create your views here.
-
+@login_required(login_url='login')
 def index(request):
     products=Product.objects.all()
     allProds=[]
@@ -90,24 +93,47 @@ def products(request):
         return HttpResponse(models.Product.all)
 
 def register(request):
-    if request.method=='POST':
-        form=UserCreationForm(request.POST)
+    form=CreateUserForm()
 
+    if request.method=='POST':
+        form=CreateUserForm(request.POST)
         if form.is_valid():
-            user=form.save(commit=False)
-            password=form.cleaned_data.get('password')
-            user.set_password(password)
             form.save()
-            username=form.cleaned_data['username']
-            password=form.cleaned_data['password1']
-            user=authenticate(username=username,password=password)
-            login(request,user)
-            if next:
-                return redirect(next)
-            return redirect('/mac')
-    else:
-        form=UserCreationForm()
+            user=form.cleaned_data.get('username')
+            messages.SUCCESS(request,'Account successfully created:'+user)
+            return redirect('mac/login')
     context={'form':form}
+
     return render(request,'registration/register.html',context)
+
+
+
+def login(request):
+
+    user=User()
+    if request.method=='POST':
+        username=request.POST.get('username')
+        password=request.POST.get('password')    
+        user=authenticate(request,username=username,password=password)
+
+        if user is not None:
+            login(request,user)
+            redirect('mac')
+        else:
+            messages.info(request,'Username or Password Incorrect')
+        
+    
+    context={}
+    return render(request,'registration/login.html',context)
+
+def logoutUser(request):
+    logout(request)
+    return redirect('mac/login')
+
+
+
+
+
+
 
  
