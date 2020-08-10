@@ -43,6 +43,7 @@ def contact(request):
 
     return render(request,'mac/contact.html')
 
+@login_required(login_url='login')
 def tracker(request):
     if request.method=="POST":
         orderId = request.POST.get('orderId', '')
@@ -70,6 +71,7 @@ def prodView(request,myid):
     product=Product.objects.filter(id=myid)
     return render(request,'mac/prodView.html',{'product':product[0]})
 
+@login_required(login_url='login')
 def checkout(request):
     if request.method=="POST":
         items_json = request.POST.get('itemsJson', '')
